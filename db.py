@@ -5,24 +5,44 @@ import sys
 
 #Klassen
 
+class Kunden():
+    def __init__(self, vorname, name, straße, hausnummer, plz, tel, geb, email):
+        self.vorname = vorname
+        self.name = name
+        self.straße = straße
+        self.hausnummer = hausnummer
+        self.plz = plz
+        self.tel = tel
+        self.geb = geb
+        self.email = email
 
 
 #connect mariadb
 def mariadbconnect():
-    try:
+    try: 
         conn = mariadb.connect(
-            user = "team05",
-            password = "7R25Y",
-            host = "10.80.0.206",
+            user = "Adrian",
+            password = "Passwort",
+            host = "localhost",
             port = 3306,
-            database = "team05")
-
+            database = "schlumpfshop3"
+        )
+    
     except mariadb.Error as e:
-        print(f"Error connecting to MariaDB PLatform: {e}")
-        sys.exit(1)
-    
+        print(f"Error connecting to MariaDB: {e}")
+
     cur = conn.cursor()
-    
+
     return cur, conn
 
-mariadbconnect()
+def kundenliste(cur, eingabe):
+    cur.execute("""xx""")
+    ergebnis = cur.fetchall()
+
+    kunden_liste = []
+
+    for e in ergebnis:
+        kunde = Kunden(*e)
+        kunden_liste.append(kunde)
+
+    return kunden_liste

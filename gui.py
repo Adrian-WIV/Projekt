@@ -8,13 +8,13 @@ root.geometry('300x400')
 
 mybutton = ttk.Button(root, text = "nutzloser \n Knopf")
 
-mylistbox = ttk.Label(root, text = "WinXP is GOAT")
+mytreeview = ttk.Treeview(root,)
 
 myentry = ttk.Entry(root)
 
 mybutton.place(relx=0.5, rely=0.5, anchor = CENTER)
 myentry.place(relx = 0.5, rely = 0.8, anchor = N)
-mylistbox.place(relx = 0.5, anchor = N)
+mytreeview.place(relx = 0.5, anchor = N)
 
 
 root.mainloop()
