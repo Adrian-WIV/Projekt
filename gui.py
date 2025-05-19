@@ -1,20 +1,14 @@
+#imports
 import tkinter as tk
-from tkinter import *
-from tkinter import ttk
-from ttkthemes import ThemedTk
+from tkinter import ttk, messagebox
+#import für Bilder
+import os
 
-root = ThemedTk(theme = "winxpblue")
-root.geometry('300x400')
+#Fenster erstellen
+root = tk.Tk()
+root.title ("Suchprogramm")
+root.geometry("950x500")
 
-mybutton = ttk.Button(root, text = "nutzloser \n Knopf")
-
-mytreeview = ttk.Treeview(root,)
-
-myentry = ttk.Entry(root)
-
-mybutton.place(relx=0.5, rely=0.5, anchor = CENTER)
-myentry.place(relx = 0.5, rely = 0.8, anchor = N)
-mytreeview.place(relx = 0.5, anchor = N)
-
-
-root.mainloop()
+#Eingabefelder
+labels = ["ID:", "Vorname:", "Nachname:", "Produkte:", "Monat:"]
+inputs = {} #Alle Eingabefelder gesammelt nach Namen
