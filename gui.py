@@ -68,3 +68,101 @@ def suchen():
         if suchkriterien["Monat"] not in gültige_monate:
             messagebox.showerror("Fehler", "Ungültiger Monat eingegeben.")
             return  #Abbruchbedingung: wenn der Monat nicht erkannt wird
+        
+        
+
+    #Tabelle leeren
+    for zeile in tabelle.get_children():
+        tabelle.delete(zeile)
+
+    #Daten durchsuchen
+    for datensatz in daten:
+        match = True  #Passt Zeile zu Suchkriterien?
+
+        #Verbindet Spaltennamen mit Werten der aktuellen Zeile
+        datensatz_dict = dict(zip(columns, datensatz))
+
+        #Geht alle eingegebenen Suchkriterien durch
+        for feldname, inhalt in suchkriterien.items():
+            feldwert = str(datensatz_dict.get(feldname, "")).lower()  #Wert in der Zeile
+            eingabe = inhalt.lower()  #Suchtext
+
+            #Wird auf genaue Übereinstimmung geprüft
+            if feldname == "ID":
+                if feldwert != eingabe:
+                    match = False
+                    break
+            else:
+                #Bei allen anderen Feldern reicht Teilwort
+                if eingabe not in feldwert:
+                    match = False
+                    break
+
+        if match:     #Wenn Zeile passt, wird sie in die Tabelle eingefügt
+            tabelle.insert("", tk.END, values=datensatz)
+
+#Such-Button, der die Funktion "suchen" aufruft
+such_btn = tk.Button(root, text="Suchen", command=suchen)
+such_btn.place(x=120, y=30 + len(labels) * 40, width=180)
+
+#Rahmen für die Tabelle
+tabelle_frame = tk.Frame(root)
+tabelle_frame.place(x=350, y=20, width=570, height=440)
+
+#Scrollleisten für die Tabelle
+scroll_y = tk.Scrollbar(tabelle_frame, orient=tk.VERTICAL)
+scroll_x = tk.Scrollbar(tabelle_frame, orient=tk.HORIZONTAL)
+
+#Tabelle erstellen
+tabelle = ttk.Treeview(tabelle_frame, columns=columns, show="headings",
+                       yscrollcommand=scroll_y.set, xscrollcommand=scroll_x.set)
+
+#Scrollleisten mit der Tabelle verbinden
+scroll_y.config(command=tabelle.yview)
+scroll_x.config(command=tabelle.xview)
+
+#Scrollleisten und Tabelle im Fenster anzeigen
+scroll_y.pack(side=tk.RIGHT, fill=tk.Y)
+scroll_x.pack(side=tk.BOTTOM, fill=tk.X)
+tabelle.pack(fill=tk.BOTH, expand=True)
+
+#Spaltenbreiten
+spaltenbreiten = [40, 80, 100, 150, 60, 80]
+
+#Spaltenüberschriften setzen und zentrieren
+for index, spaltenname in enumerate(columns):
+    tabelle.heading(spaltenname, text=spaltenname, anchor="center")  #Text oben in der Spalte
+    tabelle.column(spaltenname, width=spaltenbreiten[index], anchor="center")  #Spaltenbreite + Ausrichtung
+
+
+#Fügt alle Beispiel-Daten in die Tabelle ein
+for datensatz in daten:
+    tabelle.insert("", tk.END, values=datensatz)
+
+#Badmeyer-Logo unten links
+try:
+    bildpfad = "badmeyer_small.png"  #Pfad zur Bilddatei
+
+    #Prüft, ob die Bilddatei existiert
+    if not os.path.isfile(bildpfad):
+        raise FileNotFoundError(f"Datei nicht gefunden: {bildpfad}")
+
+    #Bild laden
+    logo_bild = tk.PhotoImage(file=bildpfad)
+
+    #Bild ggf. verkleinern oder vergrößern
+    logo_bild = logo_bild.subsample(1, 1)
+
+    #Bild in einem Label anzeigen
+    logo_label = tk.Label(root, image=logo_bild, bg=root.cget("bg"))
+    logo_label.image = logo_bild  # Verhindert, dass das Bild aus dem Speicher verschwindet
+    logo_label.place(x=60, y=270)  # Position des Bildes unten links
+
+#Falls beim Laden etwas schiefläuft, Ausgabe im Terminal
+except Exception as fehler:
+    print("Fehler beim Laden des Bildes:", fehler)
+    print("Aktueller Pfad:", os.getcwd())
+    print("Dateien im Ordner:", os.listdir())
+
+#Anwendung wird gestartet
+root.mainloop()
