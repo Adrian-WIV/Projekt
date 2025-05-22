@@ -10,7 +10,7 @@ root.title ("Suchprogramm")
 root.geometry("950x500")
 
 #Eingabefelder
-labels = ["ID:", "Vorname:", "Nachname:", "Produkte:", "Monat:"]
+labels = ["ID:", "Vorname:", "Nachname:", "Produkte:"]
 inputs = {} #Alle Eingabefelder gesammelt nach Namen
 
 #Geht alle Feldnamen durch
@@ -18,29 +18,33 @@ for i, label in enumerate(labels):
     #Zeigt den Text (ID, Name, etc.) links im Fenster an
     tk.Label(root, text=label).place(x=20, y=30 + i * 40)  #Position: 20 Pixel von links, und 40 Pixel nach unten versetzt
 
-    #Bei "Monat" wird ein Dropdown/Combobox angezeigt
-    if label == "Monat:":
-        combo = ttk.Combobox(root, values=[
-            "Januar", "Februar", "März", "April", "Mai", "Juni",
-            "Juli", "August", "September", "Oktober", "November", "Dezember"
-        ])
-        combo.place(x=120, y=30 + i * 40, width=180)  #Position der Auswahlliste
-        inputs["Monat"] = combo  #Speichert die Auswahlliste unter dem Namen "Monat"
+    eingabe = tk.Entry(root)  #Erstellt ein Textfeld
+    eingabe.place(x=120, y=30 + i * 40, width=180)  #Position des Textfelds rechts neben dem Label
+    inputs[label.strip(":")] = eingabe  #Speichert das Textfeld ohne Doppelpunkt
 
-    else:
-        eingabe = tk.Entry(root)  #Erstellt ein Textfeld
-        eingabe.place(x=120, y=30 + i * 40, width=180)  #Position des Textfelds rechts neben dem Label
-        inputs[label.strip(":")] = eingabe  #Speichert das Textfeld ohne Doppelpunkt
+#Monat-Auswahl als Dropdown
+tk.Label(root, text="Monat:").place(x=20, y=30 + len(labels) * 40)
+monat_combo = ttk.Combobox(root, values=[
+    "Januar", "Februar", "März", "April", "Mai", "Juni",
+    "Juli", "August", "September", "Oktober", "November", "Dezember"
+])
+monat_combo.place(x=120, y=30 + len(labels) * 40, width=180)
+inputs["Monat"] = monat_combo
 
+#Jahr-Auswahl als Dropdown
+tk.Label(root, text="Jahr:").place(x=20, y=30 + (len(labels) + 1) * 40)
+jahr_combo = ttk.Combobox(root, values=["2024", "2025"])
+jahr_combo.place(x=120, y=30 + (len(labels) + 1) * 40, width=180)
+inputs["Jahr"] = jahr_combo
 
 #Spaltenüberschriften der Tabelle
-columns = ("ID", "Vorname", "Nachname", "Produkte", "Menge", "Monat")
+columns = ("ID", "Vorname", "Nachname", "Produkte", "Menge", "Monat", "Jahr")
 
 #### Beispiel-Daten ####
 daten = [
-    (1, "Adrian", "Badar", "Gabelstapler P", 2, "April"),
-    ("", "", "", "Gabelstapler W", 1, ""),
-    (2, "Lucas", "Lehmeyer", "Ameise ;)", 3, "Mai")
+    (1, "Adrian", "Badar", "Gabelstapler P", 2, "April", "2024"),
+    ("", "", "", "Gabelstapler W", 1, "April", "2024"),
+    (2, "Lucas", "Lehmeyer", "Ameise ;)", 3, "Mai", "2025")
 ]
 
 #Such-Button
@@ -60,16 +64,20 @@ def suchen():
             return  #Abbruchbedingung: wenn ID ungültig ist
 
     #Prüft, ob der Monat gültig ist
+    gültige_monate = [
+        "Januar", "Februar", "März", "April", "Mai", "Juni",
+        "Juli", "August", "September", "Oktober", "November", "Dezember"
+    ]
     if "Monat" in suchkriterien:
-        gültige_monate = [
-            "Januar", "Februar", "März", "April", "Mai", "Juni",
-            "Juli", "August", "September", "Oktober", "November", "Dezember"
-        ]
         if suchkriterien["Monat"] not in gültige_monate:
             messagebox.showerror("Fehler", "Ungültiger Monat eingegeben.")
             return  #Abbruchbedingung: wenn der Monat nicht erkannt wird
-        
-        
+
+    #Prüft, ob das Jahr gültig ist
+    if "Jahr" in suchkriterien:
+        if suchkriterien["Jahr"] not in ["2024", "2025"]:
+            messagebox.showerror("Fehler", "Ungültiges Jahr eingegeben.")
+            return  #Abbruchbedingung: wenn das Jahr nicht erkannt wird
 
     #Tabelle leeren
     for zeile in tabelle.get_children():
@@ -103,7 +111,7 @@ def suchen():
 
 #Such-Button, der die Funktion "suchen" aufruft
 such_btn = tk.Button(root, text="Suchen", command=suchen)
-such_btn.place(x=120, y=30 + len(labels) * 40, width=180)
+such_btn.place(x=120, y=30 + (len(labels) + 2) * 40, width=180)
 
 #Rahmen für die Tabelle
 tabelle_frame = tk.Frame(root)
@@ -127,17 +135,27 @@ scroll_x.pack(side=tk.BOTTOM, fill=tk.X)
 tabelle.pack(fill=tk.BOTH, expand=True)
 
 #Spaltenbreiten
-spaltenbreiten = [40, 80, 100, 150, 60, 80]
+spaltenbreiten = [40, 80, 100, 150, 60, 80, 60]
 
 #Spaltenüberschriften setzen und zentrieren
 for index, spaltenname in enumerate(columns):
     tabelle.heading(spaltenname, text=spaltenname, anchor="center")  #Text oben in der Spalte
     tabelle.column(spaltenname, width=spaltenbreiten[index], anchor="center")  #Spaltenbreite + Ausrichtung
 
-
-#Fügt alle Beispiel-Daten in die Tabelle ein
+#Fügt alle Beispiel-Daten in die Tabelle ein (Monat/Jahr nur bei neuer Bestellung)
+letzte_id = None  #Merkt sich die letzte ID
 for datensatz in daten:
-    tabelle.insert("", tk.END, values=datensatz)
+    aktuelle_id = datensatz[0]
+
+    #Wenn ID leer oder gleich wie vorher: Monat und Jahr ausblenden
+    if aktuelle_id == "" or aktuelle_id == letzte_id:
+        datensatz_angepasst = list(datensatz)
+        datensatz_angepasst[5] = ""  # Monat leeren
+        datensatz_angepasst[6] = ""  # Jahr leeren
+        tabelle.insert("", tk.END, values=datensatz_angepasst)
+    else:
+        tabelle.insert("", tk.END, values=datensatz)
+        letzte_id = aktuelle_id
 
 #Badmeyer-Logo unten links
 try:
