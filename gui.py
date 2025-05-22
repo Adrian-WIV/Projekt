@@ -7,7 +7,7 @@ import os
 #Fenster erstellen
 root = tk.Tk()
 root.title ("Suchprogramm")
-root.geometry("950x500")
+root.geometry("1050x600")
 
 #Eingabefelder
 labels = ["ID:", "Vorname:", "Nachname:", "Produkte:"]
@@ -115,7 +115,7 @@ such_btn.place(x=120, y=30 + (len(labels) + 2) * 40, width=180)
 
 #Rahmen für die Tabelle
 tabelle_frame = tk.Frame(root)
-tabelle_frame.place(x=350, y=20, width=570, height=440)
+tabelle_frame.place(x=350, y=20, width=670, height=440)
 
 #Scrollleisten für die Tabelle
 scroll_y = tk.Scrollbar(tabelle_frame, orient=tk.VERTICAL)
@@ -174,7 +174,7 @@ try:
     #Bild in einem Label anzeigen
     logo_label = tk.Label(root, image=logo_bild, bg=root.cget("bg"))
     logo_label.image = logo_bild  # Verhindert, dass das Bild aus dem Speicher verschwindet
-    logo_label.place(x=60, y=270)  # Position des Bildes unten links
+    logo_label.place(x=60, y=320)  # Position des Bildes unten links
 
 #Falls beim Laden etwas schiefläuft, Ausgabe im Terminal
 except Exception as fehler:
