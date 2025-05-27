@@ -27,6 +27,8 @@ def mariadbconnect():
             port = 3306,
             database = "schlumpfshop3"
         )
+
+        print("verbindung erfolgreich")
     
     except mariadb.Error as e:
         print(f"Error connecting to MariaDB: {e}")
@@ -46,3 +48,5 @@ def kundenliste(cur, eingabe):
         kunden_liste.append(kunde)
 
     return kunden_liste
+
+mariadbconnect()
