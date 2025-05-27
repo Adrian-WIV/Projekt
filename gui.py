@@ -18,6 +18,17 @@ main_frame.place(x=0, y=0, relwidth=1, relheight=1)
 einzel_frame = ttk.Frame(main_frame)
 gesamt_frame = ttk.Frame(main_frame)
 
+#bild global laden
+
+try:
+    bildpfad = "badmeyer_small-removebg.png"
+    if not os.path.isfile(bildpfad):
+        raise FileNotFoundError(f"Datei nicht gefunden: {bildpfad}")
+    logo_bild = tk.PhotoImage(file=bildpfad)
+except Exception as fehler:
+    print("Fehler beim Laden des Bildes:", fehler)
+    logo_bild = None  
+
 #Funktionen
 #Frame auswahl
 def zeige_frame(frame):
@@ -197,15 +208,10 @@ def einzelsuche():
                 raise FileNotFoundError(f"Datei nicht gefunden: {bildpfad}")
 
             #Bild laden
-            logo_bild = tk.PhotoImage(file=bildpfad)
-
-            #Bild ggf. verkleinern oder vergrößern
-            logo_bild = logo_bild.subsample(1, 1)
-
-            #Bild in einem Label anzeigen
-            logo_label = tk.Label(einzel_frame, image=logo_bild, bg=einzel_frame.cget("bg"))
-            logo_label.image = logo_bild  # Verhindert, dass das Bild aus dem Speicher verschwindet
-            logo_label.place(x=60, y=320)  # Position des Bildes unten links
+            if logo_bild:
+                logo_label = tk.Label(einzel_frame, image=logo_bild)
+                logo_label.image = logo_bild
+                logo_label.place(x=60, y=320)  # Position des Bildes unten links
 
         #Falls beim Laden etwas schiefläuft, Ausgabe im Terminal
         except Exception as fehler:
@@ -328,11 +334,11 @@ def gesamtsuche():
         bildpfad = "badmeyer_small-removebg.png"
         if not os.path.isfile(bildpfad):
             raise FileNotFoundError(f"Datei nicht gefunden: {bildpfad}")
-        logo_bild = tk.PhotoImage(file=bildpfad)
-        logo_bild = logo_bild.subsample(1, 1)
-        logo_label = tk.Label(gesamt_frame, image=logo_bild, bg=root.cget("bg"))
-        logo_label.image = logo_bild
-        logo_label.place(x=60, y=320)
+        if logo_bild:
+            logo_label = tk.Label(gesamt_frame, image=logo_bild)
+            logo_label.image = logo_bild
+            logo_label.place(x=60, y=320)
+
     except Exception as fehler:
         print("Fehler beim Laden des Bildes (Gesamtsuche):", fehler)
 
