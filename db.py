@@ -49,4 +49,8 @@ def kundenliste(cur, eingabe):
 
     return kunden_liste
 
-mariadbconnect()
+def sql_einzelansicht(id="", vorname="", nachname="", produkte="", menge="", monat="", jahr=""):
+    conn = mariadbconnect()
+    cur = conn.cursor()
+
+    abfrage = """ SELECT  """
