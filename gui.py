@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from ttkthemes import ThemedTk
 import os
+from db import sql_einzelansicht
 
 # ---------- SPLASH & LOGIN BLOCK ----------
 def show_splash_and_login():
@@ -73,14 +74,8 @@ def show_splash_and_login():
 # -------------- AB HIER DEIN KOMPLETTER ALTER CODE UNVERÄNDERT (außer dass alles in start_main_gui() steht) ---------
 
 def start_main_gui():
-    #imports
-    #import tkinter as tk
-    #from tkinter import ttk, messagebox
-    #from ttkthemes import ThemedTk
-    #import für Bilder
-    #import os
-    #import für db
-from db import sql_einzelansicht
+    
+
 #Variablen
     global inputs
     inputs = {}
@@ -123,14 +118,14 @@ from db import sql_einzelansicht
 
 
     def einzelsuche():
-        ##################
-
-        #Eingabefelder
-            labels = ["ID:", "Vorname:", "Nachname:", "Produkte:"]
-            inputs.clear()
+        
+        daten = []
+            #Eingabefelder
+        labels = ["ID:", "Vorname:", "Nachname:", "Produkte:"]
+        inputs.clear()
 
             #Geht alle Feldnamen durch
-            for i, label in enumerate(labels):
+        for i, label in enumerate(labels):
                 #Zeigt den Text (ID, Name, etc.) links im Fenster an
                 ttk.Label(einzel_frame, text=label).place(x=20, y=30 + i * 40)  #Position: 20 Pixel von links, und 40 Pixel nach unten versetzt
 
@@ -149,19 +144,19 @@ from db import sql_einzelansicht
                     inputs[label.strip(":")] = eingabe  #Speichert das Textfeld ohne Doppelpunkt
 
         #Monat-Auswahl als Dropdown
-            ttk.Label(einzel_frame, text="Monat:").place(x=20, y=30 + len(labels) * 40)
-            monat_combo = ttk.Combobox(einzel_frame, values=[
+        ttk.Label(einzel_frame, text="Monat:").place(x=20, y=30 + len(labels) * 40)
+        monat_combo = ttk.Combobox(einzel_frame, values=[
             "Januar", "Februar", "März", "April", "Mai", "Juni",
             "Juli", "August", "September", "Oktober", "November", "Dezember"
         ])
-            monat_combo.place(x=120, y=30 + len(labels) * 40, width=180)
-            inputs["Monat"] = monat_combo
+        monat_combo.place(x=120, y=30 + len(labels) * 40, width=180)
+        inputs["Monat"] = monat_combo
 
             #Jahr-Auswahl als Dropdown
-            ttk.Label(einzel_frame, text="Jahr:").place(x=20, y=30 + (len(labels) + 1) * 40)
-            jahr_combo = ttk.Combobox(einzel_frame, values=["2024", "2025"])
-            jahr_combo.place(x=120, y=30 + (len(labels) + 1) * 40, width=180)
-            inputs["Jahr"] = jahr_combo
+        ttk.Label(einzel_frame, text="Jahr:").place(x=20, y=30 + (len(labels) + 1) * 40)
+        jahr_combo = ttk.Combobox(einzel_frame, values=["2024", "2025"])
+        jahr_combo.place(x=120, y=30 + (len(labels) + 1) * 40, width=180)
+        inputs["Jahr"] = jahr_combo
 
         #Spaltenüberschriften der Tabelle
         columns = ("ID", "Vorname", "Nachname", "Produkte", "Menge", "Monat", "Jahr")
@@ -226,68 +221,68 @@ from db import sql_einzelansicht
         such_btn.place(x=120, y=30 + (len(labels) + 2) * 40, width=180)
 
             #Rahmen für die Tabelle
-            tabelle_frame = ttk.Frame(einzel_frame)
-            tabelle_frame.place(x=350, y=20, width=670, height=440)
+        tabelle_frame = ttk.Frame(einzel_frame)
+        tabelle_frame.place(x=350, y=20, width=670, height=440)
 
-                #Scrollleisten für die Tabelle
-            scroll_y = ttk.Scrollbar(tabelle_frame, orient=tk.VERTICAL)
-            scroll_x = ttk.Scrollbar(tabelle_frame, orient=tk.HORIZONTAL)
+                    #Scrollleisten für die Tabelle
+        scroll_y = ttk.Scrollbar(tabelle_frame, orient=tk.VERTICAL)
+        scroll_x = ttk.Scrollbar(tabelle_frame, orient=tk.HORIZONTAL)
 
-                #Tabelle erstellen
-            tabelle = ttk.Treeview(tabelle_frame, columns=columns, show="headings",
-                                    yscrollcommand=scroll_y.set, xscrollcommand=scroll_x.set)
+                    #Tabelle erstellen
+        tabelle = ttk.Treeview(tabelle_frame, columns=columns, show="headings",
+                                        yscrollcommand=scroll_y.set, xscrollcommand=scroll_x.set)
 
                 #Scrollleisten mit der Tabelle verbinden
-            scroll_y.config(command=tabelle.yview)
-            scroll_x.config(command=tabelle.xview)
+        scroll_y.config(command=tabelle.yview)
+        scroll_x.config(command=tabelle.xview)
 
-                #Scrollleisten und Tabelle im Fenster anzeigen
-            scroll_y.pack(side=tk.RIGHT, fill=tk.Y)
-            scroll_x.pack(side=tk.BOTTOM, fill=tk.X)
-            tabelle.pack(fill=tk.BOTH, expand=True)
+                    #Scrollleisten und Tabelle im Fenster anzeigen
+        scroll_y.pack(side=tk.RIGHT, fill=tk.Y)
+        scroll_x.pack(side=tk.BOTTOM, fill=tk.X)
+        tabelle.pack(fill=tk.BOTH, expand=True)
 
-            #Spaltenbreiten
-            spaltenbreiten = [40, 80, 100, 150, 60, 80, 60]
+    #Spaltenbreiten
+        spaltenbreiten = [40, 80, 100, 150, 60, 80, 60]
 
-                #Spaltenüberschriften setzen und zentrieren
-            for index, spaltenname in enumerate(columns):
-                    tabelle.heading(spaltenname, text=spaltenname, anchor="center")  #Text oben in der Spalte
-                    tabelle.column(spaltenname, width=spaltenbreiten[index], anchor="center")  #Spaltenbreite + Ausrichtung
+        #Spaltenüberschriften setzen und zentrieren
+        for index, spaltenname in enumerate(columns):
+                tabelle.heading(spaltenname, text=spaltenname, anchor="center")  #Text oben in der Spalte
+                tabelle.column(spaltenname, width=spaltenbreiten[index], anchor="center")  #Spaltenbreite + Ausrichtung
 
-            #Fügt alle Beispiel-Daten in die Tabelle ein (Monat/Jahr nur bei neuer Bestellung)
-            letzte_id = None  #Merkt sich die letzte ID
-            for datensatz in daten:
-                aktuelle_id = datensatz[0]
+        #Fügt alle Beispiel-Daten in die Tabelle ein (Monat/Jahr nur bei neuer Bestellung)
+        letzte_id = None  #Merkt sich die letzte ID
+        for datensatz in daten:
+                    aktuelle_id = datensatz[0]
 
-                #Wenn ID leer oder gleich wie vorher: Monat und Jahr ausblenden
-                if aktuelle_id == "" or aktuelle_id == letzte_id:
-                    datensatz_angepasst = list(datensatz)
-                    datensatz_angepasst[5] = ""  # Monat leeren
-                    datensatz_angepasst[6] = ""  # Jahr leeren
-                    tabelle.insert("", tk.END, values=datensatz_angepasst)
-                else:
-                    tabelle.insert("", tk.END, values=datensatz)
-                    letzte_id = aktuelle_id
+            #Wenn ID leer oder gleich wie vorher: Monat und Jahr ausblenden
+        if aktuelle_id == "" or aktuelle_id == letzte_id:
+            datensatz_angepasst = list(datensatz)
+            datensatz_angepasst[5] = ""  # Monat leeren
+            datensatz_angepasst[6] = ""  # Jahr leeren
+            tabelle.insert("", tk.END, values=datensatz_angepasst)
+        else:
+            tabelle.insert("", tk.END, values=datensatz)
+            letzte_id = aktuelle_id
 
-            #Badmeyer-Logo unten links
-            try:
-                bildpfad = "badmeyer_small-removebg.png"  #Pfad zur Bilddatei
+        #Badmeyer-Logo unten links
+        try:
+            bildpfad = "badmeyer_small-removebg.png"  #Pfad zur Bilddatei
 
-                #Prüft, ob die Bilddatei existiert
-                if not os.path.isfile(bildpfad):
-                    raise FileNotFoundError(f"Datei nicht gefunden: {bildpfad}")
+            #Prüft, ob die Bilddatei existiert
+            if not os.path.isfile(bildpfad):
+                raise FileNotFoundError(f"Datei nicht gefunden: {bildpfad}")
 
-                #Bild laden
-                if logo_bild:
-                    logo_label = tk.Label(einzel_frame, image=logo_bild)
-                    logo_label.image = logo_bild
-                    logo_label.place(x=60, y=320)  # Position des Bildes unten links
+            #Bild laden
+            if logo_bild:
+                logo_label = tk.Label(einzel_frame, image=logo_bild)
+                logo_label.image = logo_bild
+                logo_label.place(x=60, y=320)  # Position des Bildes unten links
 
-            #Falls beim Laden etwas schiefläuft, Ausgabe im Terminal
-            except Exception as fehler:
-                print("Fehler beim Laden des Bildes:", fehler)
-                print("Aktueller Pfad:", os.getcwd())
-                print("Dateien im Ordner:", os.listdir())
+        #Falls beim Laden etwas schiefläuft, Ausgabe im Terminal
+        except Exception as fehler:
+            print("Fehler beim Laden des Bildes:", fehler)
+            print("Aktueller Pfad:", os.getcwd())
+            print("Dateien im Ordner:", os.listdir())
 
         
 
