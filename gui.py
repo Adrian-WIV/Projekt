@@ -4,6 +4,8 @@ from tkinter import ttk, messagebox
 from ttkthemes import ThemedTk
 #import für Bilder
 import os
+#import für db
+from db import sql_einzelansicht
 #Variablen
 inputs = {}
 
@@ -82,76 +84,62 @@ def einzelsuche():
         #Spaltenüberschriften der Tabelle
         columns = ("ID", "Vorname", "Nachname", "Produkte", "Menge", "Monat", "Jahr")
 
-        #### Beispiel-Daten ####
-        daten = [
-            (1, "Adrian", "Badar", "Gabelstapler P", 2, "April", "2024"),
-            ("", "", "", "Gabelstapler W", 1, "April", "2024"),
-            (2, "Lucas", "Lehmeyer", "Ameise ;)", 3, "Mai", "2025")
-        ]
-
         #Such-Button
         def suchen():
-            suchkriterien = {}  #Hier werden alle eingegebenen Suchwerte gespeichert
 
-                #Geht alle Eingabefelder durch
-            for feldname, eingabe in inputs.items():
-                    inhalt = eingabe.get().strip()  #Holt den eingegebenen Text und entfernt Leerzeichen
-                    if inhalt:  #Wenn etwas eingegeben wurde
-                            suchkriterien[feldname] = inhalt  #Speichert den Text unter dem passenden Namen (z. B. "ID")
+            vorname = inputs.get("Vorname").get().strip()
+            nachname = inputs.get("Nachname").get().strip()
+            produkt = inputs.get("Produkte").get().strip()
+            monat_name = inputs.get("Monat").get().strip()
+            jahr = inputs.get("Jahr").get().strip()
 
-            #Prüft, ob die ID nur aus Zahlen besteht
-            if "ID" in suchkriterien:
-                if not suchkriterien["ID"].isdigit():
-                        messagebox.showerror("Fehler", "ID muss eine Zahl sein.")
-                return  #Abbruchbedingung: wenn ID ungültig ist
 
             #Prüft, ob der Monat gültig ist
             gültige_monate = [
                 "Januar", "Februar", "März", "April", "Mai", "Juni",
                 "Juli", "August", "September", "Oktober", "November", "Dezember"
             ]
-            if "Monat" in suchkriterien:
-                if suchkriterien["Monat"] not in gültige_monate:
-                    messagebox.showerror("Fehler", "Ungültiger Monat eingegeben.")
-                    return  #Abbruchbedingung: wenn der Monat nicht erkannt wird
 
-            #Prüft, ob das Jahr gültig ist
-            if "Jahr" in suchkriterien:
-                if suchkriterien["Jahr"] not in ["2024", "2025"]:
-                    messagebox.showerror("Fehler", "Ungültiges Jahr eingegeben.")
-                    return  #Abbruchbedingung: wenn das Jahr nicht erkannt wird
+            #Monate in zahl umwandeln
+            monat = gültige_monate.index(monat_name) + 1 if monat_name in gültige_monate else None
 
-                #Tabelle leeren
-                for zeile in tabelle.get_children():
+            #überprüfung jahr
+            jahr = int(jahr) if jahr.isdigit() else None
+
+
+            daten = sql_einzelansicht(
+                 id = "", 
+                 vorname = vorname, 
+                 nachname = nachname, 
+                 produkt = produkt, 
+                 menge = "", 
+                 monat = monat, 
+                 jahr = jahr
+                 )
+
+            
+            #Tabelle leeren
+            for zeile in tabelle.get_children():
                     tabelle.delete(zeile)
 
-                #Daten durchsuchen
-                for datensatz in daten:
-                    match = True  #Passt Zeile zu Suchkriterien?
+            #daten in tabelle
 
-                    #Verbindet Spaltennamen mit Werten der aktuellen Zeile
-                    datensatz_dict = dict(zip(columns, datensatz))
+            letzte_id = None
 
-                    #Geht alle eingegebenen Suchkriterien durch
-                    for feldname, inhalt in suchkriterien.items():
-                        feldwert = str(datensatz_dict.get(feldname, "")).lower()  #Wert in der Zeile
-                        eingabe = inhalt.lower()  #Suchtext
+            for datensatz in daten:
+                aktuelle_id = datensatz[0]
+                if aktuelle_id == letzte_id:
+                    datensatz_angepasst = list(datensatz)
+                    datensatz_angepasst[5] = ""
+                    datensatz_angepasst[6] = ""
+                    tabelle.insert("", tk.END, values= datensatz_angepasst)
 
-                        #Wird auf genaue Übereinstimmung geprüft
-                        if feldname == "ID":
-                            if feldwert != eingabe:
-                                match = False
-                                break
-                        else:
-                            #Bei allen anderen Feldern reicht Teilwort
-                            if eingabe not in feldwert:
-                                match = False
-                                break
+                else:
+                    tabelle.insert("", tk.END, values= datensatz)
+                    letzte_id = aktuelle_id
 
-                    if match:     #Wenn Zeile passt, wird sie in die Tabelle eingefügt
-                        tabelle.insert("", tk.END, values=datensatz)
-
-    #Such-Button, der die Funktion "suchen" aufruft
+                
+        #Such-Button, der die Funktion "suchen" aufruft
         such_btn = ttk.Button(einzel_frame, text="Suchen", command=suchen)
         such_btn.place(x=120, y=30 + (len(labels) + 2) * 40, width=180)
 
@@ -183,21 +171,6 @@ def einzelsuche():
         for index, spaltenname in enumerate(columns):
                 tabelle.heading(spaltenname, text=spaltenname, anchor="center")  #Text oben in der Spalte
                 tabelle.column(spaltenname, width=spaltenbreiten[index], anchor="center")  #Spaltenbreite + Ausrichtung
-
-        #Fügt alle Beispiel-Daten in die Tabelle ein (Monat/Jahr nur bei neuer Bestellung)
-        letzte_id = None  #Merkt sich die letzte ID
-        for datensatz in daten:
-            aktuelle_id = datensatz[0]
-
-            #Wenn ID leer oder gleich wie vorher: Monat und Jahr ausblenden
-            if aktuelle_id == "" or aktuelle_id == letzte_id:
-                datensatz_angepasst = list(datensatz)
-                datensatz_angepasst[5] = ""  # Monat leeren
-                datensatz_angepasst[6] = ""  # Jahr leeren
-                tabelle.insert("", tk.END, values=datensatz_angepasst)
-            else:
-                tabelle.insert("", tk.END, values=datensatz)
-                letzte_id = aktuelle_id
 
         #Badmeyer-Logo unten links
         try:

@@ -25,17 +25,17 @@ def mariadbconnect():
             password = "Passwort",
             host = "localhost",
             port = 3306,
-            database = "schlumpfshop3"
+            database = "projekt2"
         )
 
         print("verbindung erfolgreich")
+        cur = conn.cursor()
+        return conn, cur
     
     except mariadb.Error as e:
         print(f"Error connecting to MariaDB: {e}")
 
-    cur = conn.cursor()
-
-    return cur, conn
+        return None, None
 
 def kundenliste(cur, eingabe):
     cur.execute("""xx""")
@@ -49,9 +49,11 @@ def kundenliste(cur, eingabe):
 
     return kunden_liste
 
-def sql_einzelansicht(id="", vorname="", nachname="", produkte="", menge="", monat="", jahr=""):
-    conn = mariadbconnect()
-    cur = conn.cursor()
+def sql_einzelansicht(id="", vorname="", nachname="", produkt="", menge="", monat="", jahr=""):
+    conn, cur = mariadbconnect()
+    if conn is None or cur is None:
+        print("Keine Verbindung möglich")
+        return []
 
     abfrage = """ SELECT 
         kunden.IDKunde, 
@@ -71,25 +73,26 @@ def sql_einzelansicht(id="", vorname="", nachname="", produkte="", menge="", mon
 
     if vorname:
         abfrage += "AND kunden.vorname LIKE ?"
-        abfrage.append(f"%{vorname}%")
+        ausgabe.append(f"%{vorname}%")
     
     if nachname:
         abfrage += "AND kunden.name LIKE ?"
-        abfrage.append(f"%{nachname}%")
+        ausgabe.append(f"%{nachname}%")
 
-    if produkte:
+    if produkt:
         abfrage += "AND produkte.produktname LIKE ?"
-        abfrage.append(f"%{produkte}%")
+        ausgabe.append(f"%{produkt}%")
 
     if monat:
         abfrage += "AND MONTH(bestellungen.bestelldatum) LIKE ?"
-        abfrage.append(f"%{int(monat)}%")
+        ausgabe.append(int(monat))
 
     if jahr:
         abfrage += " AND YEAR(bestellungen.bestelldatum) LIKE ?"
-        abfrage.append(f"%{int(jahr)}%")
+        ausgabe.append(int(jahr))
 
     cur.execute(abfrage, tuple(ausgabe))
     daten = cur.fetchall()
+    cur.close()
     conn.close()
     return daten
