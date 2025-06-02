@@ -131,7 +131,8 @@ def start_main_gui():
 
                 #Bei "Monat" wird ein Dropdown/Combobox angezeigt
                 if label == "Monat:":
-                    combo = ttk.Combobox(einzel_frame, values=[
+                    combo = ttk.Combobox(einzel_frame, values=
+                    [
                         "Januar", "Februar", "März", "April", "Mai", "Juni",
                         "Juli", "August", "September", "Oktober", "November", "Dezember"
                     ])
