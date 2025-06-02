@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from ttkthemes import ThemedTk
 import os
-from db import sql_einzelansicht
+from db import sql_einzelansicht, sql_gesamtsuche
 
 # ---------- SPLASH & LOGIN BLOCK ----------
 def show_splash_and_login():
@@ -70,8 +70,6 @@ def show_splash_and_login():
         login.mainloop()
     update_bar()
     splash.mainloop()
-
-# -------------- AB HIER DEIN KOMPLETTER ALTER CODE UNVERÄNDERT (außer dass alles in start_main_gui() steht) ---------
 
 def start_main_gui():
     
@@ -200,21 +198,7 @@ def start_main_gui():
             for zeile in tabelle.get_children():
                     tabelle.delete(zeile)
 
-            #daten in tabelle
-
-            letzte_id = None
-
-            for datensatz in daten:
-                aktuelle_id = datensatz[0]
-                if aktuelle_id == letzte_id:
-                    datensatz_angepasst = list(datensatz)
-                    datensatz_angepasst[5] = ""
-                    datensatz_angepasst[6] = ""
-                    tabelle.insert("", tk.END, values= datensatz_angepasst)
-
-                else:
-                    tabelle.insert("", tk.END, values= datensatz)
-                    letzte_id = aktuelle_id
+            
 
                 
         #Such-Button, der die Funktion "suchen" aufruft
@@ -250,20 +234,6 @@ def start_main_gui():
                 tabelle.heading(spaltenname, text=spaltenname, anchor="center")  #Text oben in der Spalte
                 tabelle.column(spaltenname, width=spaltenbreiten[index], anchor="center")  #Spaltenbreite + Ausrichtung
 
-        #Fügt alle Beispiel-Daten in die Tabelle ein (Monat/Jahr nur bei neuer Bestellung)
-        letzte_id = None  #Merkt sich die letzte ID
-        for datensatz in daten:
-                    aktuelle_id = datensatz[0]
-
-            #Wenn ID leer oder gleich wie vorher: Monat und Jahr ausblenden
-        if aktuelle_id == "" or aktuelle_id == letzte_id:
-            datensatz_angepasst = list(datensatz)
-            datensatz_angepasst[5] = ""  # Monat leeren
-            datensatz_angepasst[6] = ""  # Jahr leeren
-            tabelle.insert("", tk.END, values=datensatz_angepasst)
-        else:
-            tabelle.insert("", tk.END, values=datensatz)
-            letzte_id = aktuelle_id
 
         #Badmeyer-Logo unten links
         try:
@@ -287,7 +257,8 @@ def start_main_gui():
 
         
 
-    def gesamtsuche():
+    def gesamtansicht():
+        
 
         #Eingabefelder
 
@@ -321,7 +292,7 @@ def start_main_gui():
 
         #Treeview für gesamtsuche()
         #Spalten
-        spalten = ("Kunde", "Produkt", "Menge", "Monat", "Jahr")
+        spalten = ("ID", "Vorname", "Nachname", "Produkt", "Menge", "Umsatz")
 
         #TV und Scrollbar
         tabelle_frame = ttk.Frame(gesamt_frame)
@@ -341,48 +312,56 @@ def start_main_gui():
 
         #breite überschrift
 
-        spaltenbreiten = [40, 150, 60, 80, 60]
+        spaltenbreiten = [40, 100, 100, 150, 80, 60]
 
         for i, spalte in enumerate(spalten):
             gesamt_tabelle.heading(spalte, text= spalte, anchor="center")
             gesamt_tabelle.column(spalte, width=spaltenbreiten[i], anchor="center")
 
-        gesamt_daten = [
-            ("Firma Müller", "Gabelstapler P", 3, "April", "2024"),
-            ("Firma Müller", "Gabelstapler W", 1, "April", "2024"),
-            ("Firma Schmidt", "Ameise", 4, "Mai", "2025")
-        ]
-
         #suche für gesamtansicht
 
         def gesamt_suche():
-            suchkriterien = {}
 
-            for feld, eingabe in gesamt_inputs.items():
-                wert= eingabe.get().strip()
-                if wert:
-                    suchkriterien[feld] = wert.lower()
+            kunden_id = gesamt_inputs.get("Kunde").get().strip()
+            produkt = gesamt_inputs.get("Produkt").get().strip()
+            monat_name = gesamt_inputs.get("Monat").get().strip()
+            jahr_text = gesamt_inputs.get("Jahr").get().strip()
+
+
+            gültige_monate = [
+                "Januar", "Februar", "März", "April", "Mai", "Juni",
+                "Juli", "August", "September", "Oktober", "November", "Dezember"
+            ]
+
+            monat = gültige_monate.index(monat_name) +1 if monat_name in gültige_monate else None
+
+            #Jahr
+
+            jahr = int(jahr_text) if jahr_text.isdigit() else None
+
+            #nur kundenID zulässig
+
+            if kunden_id and not kunden_id.isdigit():
+                messagebox.showerror("Fehlker", "Kunden-ID muss eine Zahl sein")
+                return
             
-            #leeren
+            #abfrage
+
+            daten = sql_gesamtsuche(kunden_id, produkt, monat, jahr)
+
+            #TV leeren
             for zeile in gesamt_tabelle.get_children():
                 gesamt_tabelle.delete(zeile)
-            
-            #daten filtern
 
-            for datensatz in gesamt_daten:
-                datensatz_dict = dict(zip(spalten, datensatz))
-                match=True
-                for feld, wert in suchkriterien.items():
-                        eintrag = str(datensatz_dict.get(feld, "")).lower()
-                        if wert not in eintrag:
-                            match = False
-                            break
-                if match:
-                    gesamt_tabelle.insert("", tk.END, values= datensatz)
+            #er#gebnsi
+
+            for datensatz in daten:
+                gesamt_tabelle.insert("", tk.END, values = datensatz)
+
 
         #suche button
 
-        btn_suche = ttk.Button(gesamt_frame, text="Suchen", command= gesamtsuche)
+        btn_suche = ttk.Button(gesamt_frame, text="Suchen", command= gesamt_suche)
         btn_suche.place(x=120, y=30 + (len(labels) + 2) *40, width=180)
 
         # Bild unten links
@@ -404,11 +383,10 @@ def start_main_gui():
     root.config(menu=my_menu)
 
     my_menu.add_command(label="Einzelansicht", command= lambda: zeige_frame(einzel_frame))
-    my_menu.add_command(label="Gesamtsuche", command= lambda: zeige_frame(gesamt_frame))
+    my_menu.add_command(label="Gesamtsuche", command= lambda: [gesamtansicht(), zeige_frame(gesamt_frame)])
 
     # #Anwendung wird gestartet
     einzelsuche()
-    gesamtsuche()
     root.mainloop()
 
 # ---------- PROGRAMMSTART ----------
