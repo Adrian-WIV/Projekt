@@ -208,6 +208,11 @@ def start_main_gui():
             for zeile in tabelle.get_children():
                     tabelle.delete(zeile)
 
+
+            # Neue Daten einfügen
+            for datensatz in daten:
+                tabelle.insert("", tk.END, values=datensatz)
+
             
 
                 
