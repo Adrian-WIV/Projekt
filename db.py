@@ -97,11 +97,11 @@ def sql_einzelansicht(id="", vorname="", nachname="", produkt="", menge="", mona
         ausgabe.append(f"%{produkt}%")
 
     if monat:
-        abfrage += " AND MONTH(bestellungen.bestelldatum) ?"
+        abfrage += " AND MONTH(bestellungen.bestelldatum) = ?"
         ausgabe.append(int(monat))
 
     if jahr:
-        abfrage += " AND YEAR(bestellungen.bestelldatum) ?"
+        abfrage += " AND YEAR(bestellungen.bestelldatum) =  ?"
         ausgabe.append(int(jahr))
 
     cur.execute(abfrage, tuple(ausgabe))
@@ -142,13 +142,13 @@ def sql_gesamtsuche(kunden_id="", produkt="", monat=None, jahr=None):
         werte.append(f"%{produkt}%")
 
     if monat and jahr:
-        abfrage += " AND b.Bestelldatum >= STR_TO_DATE(CONCAT(?, '-', '01'), '%Y-%m-%d')"
+        abfrage += " AND bestellungen.Bestelldatum >= STR_TO_DATE(CONCAT(?, '-', '01'), '%Y-%m-%d')"
         werte.append(f"{jahr}-{monat:02d}")
     elif jahr:
-        abfrage += " AND YEAR(b.Bestelldatum) = ?"
+        abfrage += " AND YEAR(bestellungen.Bestelldatum) = ?"
         werte.append(jahr)
     elif monat:
-        abfrage += " AND MONTH(b.Bestelldatum) = ?"
+        abfrage += " AND MONTH(bestellungen.Bestelldatum) = ?"
         werte.append(monat)
 
     abfrage += """
@@ -158,5 +158,6 @@ def sql_gesamtsuche(kunden_id="", produkt="", monat=None, jahr=None):
 
     cur.execute(abfrage, tuple(werte))
     daten = cur.fetchall()
+    cur.close()
     conn.close()
     return daten
