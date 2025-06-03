@@ -15,15 +15,17 @@ def show_splash_and_login():
     splash = ThemedTk(theme="winxpblue")
     splash.title("Ladeprogramm")
     splash.overrideredirect(True)
-    screen_width = splash.winfo_screenwidth()
-    screen_height = splash.winfo_screenheight()
-    splash.geometry(f"{screen_width}x{screen_height}+0+0")
+    screen_width = 950
+    screen_height = 750
+    center_x = (splash.winfo_screenwidth() // 2) - (screen_width // 2)
+    center_y = (splash.winfo_screenheight() // 2) - (screen_height // 2)
+    splash.geometry(f"{screen_width}x{screen_height}+{center_x}+{center_y}")
     style = ttk.Style()
-    style.configure("Splash.TFrame", background="black")
+    style.configure("Splash.TFrame", background="white")
     splash_frame = ttk.Frame(splash, style="Splash.TFrame")
     splash_frame.place(relwidth=1, relheight=1)
     try:
-        bildpfad = "badmeyer_small.png"
+        bildpfad = "Badmeyer.png"
         if not os.path.isfile(bildpfad):
             raise FileNotFoundError(f"Datei nicht gefunden: {bildpfad}")
         bg_image = tk.PhotoImage(file=bildpfad)
@@ -41,7 +43,7 @@ def show_splash_and_login():
     def update_bar(value=0):
         progress["value"] = value
         if value < 100:
-            splash.after(30, update_bar, value + 7)
+            splash.after(80, update_bar, value + 7)
         else:
             splash.after(500, show_login_screen)
 
@@ -123,6 +125,11 @@ def start_main_gui():
         for unterframe in main_frame.winfo_children():
             unterframe.place_forget()
         frame.place(x=0, y=0, relwidth=1, relheight=1)
+    
+    def clear_treeview(tree):
+        for item in tree.get_children():
+            tree.delete(item)
+
 
 
     def einzelsuche():
@@ -214,6 +221,11 @@ def start_main_gui():
         #Such-Button, der die Funktion "suchen" aufruft
         such_btn = ttk.Button(einzel_frame, text="Suchen", command=suchen)
         such_btn.place(x=120, y=30 + (len(labels) + 2) * 40, width=180)
+
+        #leeren button
+        btn_clear_gesamt = ttk.Button(gesamt_frame, text="Leeren", command=lambda: clear_treeview(tabelle))
+        btn_clear_gesamt.grid(row=6, column=3, padx=5, pady=5)
+
 
             #Rahmen für die Tabelle
         tabelle_frame = ttk.Frame(einzel_frame)
