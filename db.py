@@ -21,16 +21,29 @@ class Kunden():
 def mariadbconnect():
     try: 
         conn = mariadb.connect(
-            user = "Adrian",
-            password = "Passwort",
-            host = "localhost",
+            user = "team05",
+            password = "7R25Y",
+            host = "10.80.0.206",
             port = 3306,
-            database = "projekt2"
+            database = "team05"
         )
 
         print("verbindung erfolgreich")
         cur = conn.cursor()
         return conn, cur
+    
+    # try: 
+    #     conn = mariadb.connect(
+    #         user = "Adrian",
+    #         password = "Passwort",
+    #         host = "localhost",
+    #         port = 3306,
+    #         database = "projekt2"
+    #     )
+
+    #     print("verbindung erfolgreich")
+    #     cur = conn.cursor()
+    #     return conn, cur
     
     except mariadb.Error as e:
         print(f"Error connecting to MariaDB: {e}")
