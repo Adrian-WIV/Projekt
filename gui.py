@@ -130,6 +130,11 @@ def start_main_gui():
         for item in tree.get_children():
             tree.delete(item)
 
+    def logout():
+        messagebox.showinfo("Logout", "Logout erfolgreich!")
+        root.destroy()
+        
+
 
 
     def einzelsuche():
@@ -415,6 +420,7 @@ def start_main_gui():
 
     my_menu.add_command(label="Einzelansicht", command= lambda: zeige_frame(einzel_frame))
     my_menu.add_command(label="Gesamtsuche", command= lambda: [gesamtansicht(), zeige_frame(gesamt_frame)])
+    my_menu.add_command(label="Logout", command=logout)
 
     # #Anwendung wird gestartet
     einzelsuche()
