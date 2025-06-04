@@ -148,21 +148,9 @@ def start_main_gui():
         for i, label in enumerate(labels):
                 #Zeigt den Text (ID, Name, etc.) links im Fenster an
                 ttk.Label(einzel_frame, text=label).place(x=20, y=30 + i * 40)  #Position: 20 Pixel von links, und 40 Pixel nach unten versetzt
-
-                #Bei "Monat" wird ein Dropdown/Combobox angezeigt
-                if label == "Monat:":
-                    combo = ttk.Combobox(einzel_frame, values=
-                    [
-                        "Januar", "Februar", "März", "April", "Mai", "Juni",
-                        "Juli", "August", "September", "Oktober", "November", "Dezember"
-                    ])
-                    combo.place(x=120, y=30 + i * 40, width=180)  #Position der Auswahlliste
-                    inputs["Monat"] = combo  #Speichert die Auswahlliste unter dem Namen "Monat"
-
-                else:
-                    eingabe = ttk.Entry(einzel_frame)  #Erstellt ein Textfeld
-                    eingabe.place(x=120, y=30 + i * 40, width=180)  #Position des Textfelds rechts neben dem Label
-                    inputs[label.strip(":")] = eingabe  #Speichert das Textfeld ohne Doppelpunkt
+                eingabe = ttk.Entry(einzel_frame)  #Erstellt ein Textfeld
+                eingabe.place(x=120, y=30 + i * 40, width=180)  #Position des Textfelds rechts neben dem Label
+                inputs[label.strip(":")] = eingabe  #Speichert das Textfeld ohne Doppelpunkt
 
         #Monat-Auswahl als Dropdown
         ttk.Label(einzel_frame, text="Monat:").place(x=20, y=30 + len(labels) * 40)
