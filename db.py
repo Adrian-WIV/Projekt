@@ -84,6 +84,10 @@ def sql_einzelansicht(id="", vorname="", nachname="", produkt="", menge="", mona
 
     ausgabe = []
 
+    if id:
+        abfrage += " AND kunden.IDkunde = ?"
+        ausgabe.append(int(id))
+
     if vorname:
         abfrage += " AND kunden.vorname LIKE ?"
         ausgabe.append(f"%{vorname}%")

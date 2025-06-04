@@ -179,7 +179,7 @@ def start_main_gui():
 
         #Such-Button
         def suchen():
-
+            id = inputs.get("ID").get().strip()
             vorname = inputs.get("Vorname").get().strip()
             nachname = inputs.get("Nachname").get().strip()
             produkt = inputs.get("Produkte").get().strip()
@@ -201,7 +201,7 @@ def start_main_gui():
 
 
             daten = sql_einzelansicht(
-                 id = "", 
+                 id = id, 
                  vorname = vorname, 
                  nachname = nachname, 
                  produkt = produkt, 
@@ -225,11 +225,11 @@ def start_main_gui():
                 
         #Such-Button, der die Funktion "suchen" aufruft
         such_btn = ttk.Button(einzel_frame, text="Suchen", command=suchen)
-        such_btn.place(x=120, y=30 + (len(labels) + 2) * 40, width=180)
+        such_btn.place(x=120, y=25 + (len(labels) + 2) * 40, width=180)
 
         #leeren button
-        btn_clear_gesamt = ttk.Button(gesamt_frame, text="Leeren", command=lambda: clear_treeview(tabelle))
-        btn_clear_gesamt.grid(row=6, column=3, padx=5, pady=5)
+        btn_clear_einzel = ttk.Button(einzel_frame, text="Leeren", command=lambda: clear_treeview(tabelle))
+        btn_clear_einzel.place(x=120, y=55 + (len(labels)+2) * 40, width=180)
 
 
             #Rahmen für die Tabelle
@@ -289,7 +289,7 @@ def start_main_gui():
 
         #Eingabefelder
 
-        labels = ["Kunde:", "Produkt:"]
+        labels = ["ID-Kunde:", "Produkt:"]
         gesamt_inputs = {}
 
         for i, label in enumerate(labels):
@@ -349,7 +349,7 @@ def start_main_gui():
 
         def gesamt_suche():
 
-            kunden_id = gesamt_inputs.get("Kunde").get().strip()
+            kunden_id = gesamt_inputs.get("ID-Kunde").get().strip()
             produkt = gesamt_inputs.get("Produkt").get().strip()
             monat_name = gesamt_inputs.get("Monat").get().strip()
             jahr_text = gesamt_inputs.get("Jahr").get().strip()
@@ -390,6 +390,10 @@ def start_main_gui():
 
         btn_suche = ttk.Button(gesamt_frame, text="Suchen", command= gesamt_suche)
         btn_suche.place(x=120, y=30 + (len(labels) + 2) *40, width=180)
+
+        #leeren button
+        btn_clear_einzel = ttk.Button(gesamt_frame, text="Leeren", command=lambda: clear_treeview(gesamt_tabelle))
+        btn_clear_einzel.place(x=120, y=55 + (len(labels)+2) * 40, width=180)
 
         # Bild unten links
         try:
