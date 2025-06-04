@@ -94,8 +94,8 @@ def start_main_gui():
     global root
     root = ThemedTk(theme="winxpblue")
     root.title ("Badmeyer")
-    win_width = 950
-    win_height = 500
+    win_width = 1050
+    win_height = 600
     center_x = (root.winfo_screenwidth() // 2) - (win_width // 2)
     center_y = (root.winfo_screenheight() // 2) - (win_height // 2)
     root.geometry(f"{win_width}x{win_height}+{center_x}+{center_y}")
@@ -267,7 +267,7 @@ def start_main_gui():
             if logo_bild:
                 logo_label = tk.Label(einzel_frame, image=logo_bild)
                 logo_label.image = logo_bild
-                logo_label.place(x=60, y=320)  # Position des Bildes unten links
+                logo_label.place(x=60, y=370)  # Position des Bildes unten links
 
         #Falls beim Laden etwas schiefläuft, Ausgabe im Terminal
         except Exception as fehler:
@@ -396,7 +396,7 @@ def start_main_gui():
             if logo_bild:
                 logo_label = tk.Label(gesamt_frame, image=logo_bild)
                 logo_label.image = logo_bild
-                logo_label.place(x=60, y=320)
+                logo_label.place(x=60, y=370)
 
         except Exception as fehler:
             print("Fehler beim Laden des Bildes (Gesamtsuche):", fehler)
