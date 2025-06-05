@@ -101,11 +101,11 @@ def sql_einzelansicht(id="", vorname="", nachname="", produkt="", menge="", mona
         ausgabe.append(f"%{produkt}%")
 
     if monat:
-        abfrage += " AND MONTH(bestellungen.bestelldatum) = ?"
+        abfrage += " AND MONTH(bestellungen.bestelldatum) >= ?"
         ausgabe.append(int(monat))
 
     if jahr:
-        abfrage += " AND YEAR(bestellungen.bestelldatum) =  ?"
+        abfrage += " AND YEAR(bestellungen.bestelldatum) >=  ?"
         ausgabe.append(int(jahr))
 
     cur.execute(abfrage, tuple(ausgabe))

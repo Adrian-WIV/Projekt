@@ -110,6 +110,27 @@ def start_main_gui():
     main_frame = ttk.Frame(root)
     main_frame.place(x=0, y=0, relwidth=1, relheight=1)
 
+    start_label = ttk.Label(main_frame, text= " Willkommen im Badmeyer Verwaltungstool für Bestellungen!", font=("Arial", 14))
+    start_label.place(relx=0.5, rely=0.2, anchor="center")
+
+    try:
+        bildpfad = "badmeyer_small.png"
+        if not os.path.isfile(bildpfad):
+            raise FileNotFoundError(f"Datei nicht gefunden: {bildpfad}")
+        start_bild = tk.PhotoImage(file=bildpfad)
+        bild_label = ttk.Label(main_frame, image=start_bild)
+        bild_label.image = start_bild  # Referenz behalten!
+        bild_label.place(relx = 0.5, rely = 0.5, anchor="center")
+    except Exception as fehler:
+        print("Fehler beim Laden des Bildes:", fehler)
+        bild_label = ttk.Label(main_frame, text="[Kein Bild verfügbar]")
+        bild_label.place(relx = 0.5, rely = 0.5, anchor="center")
+
+    start_label2 = ttk.Label(main_frame, text="Wählen Sie oben eine Ansicht aus", font=("Arial", 14))
+    start_label2.place(relx=0.5, rely=0.8, anchor="center")
+
+
+
     einzel_frame = ttk.Frame(main_frame)
     gesamt_frame = ttk.Frame(main_frame)
 
@@ -161,7 +182,7 @@ def start_main_gui():
                 inputs[label.strip(":")] = eingabe  #Speichert das Textfeld ohne Doppelpunkt
 
         #Monat-Auswahl als Dropdown
-        ttk.Label(einzel_frame, text="Monat:").place(x=20, y=30 + len(labels) * 40)
+        ttk.Label(einzel_frame, text="ab Monat:").place(x=20, y=30 + len(labels) * 40)
         monat_combo = ttk.Combobox(einzel_frame, values=[
             "Januar", "Februar", "März", "April", "Mai", "Juni",
             "Juli", "August", "September", "Oktober", "November", "Dezember"
@@ -170,7 +191,7 @@ def start_main_gui():
         inputs["Monat"] = monat_combo
 
             #Jahr-Auswahl als Dropdown
-        ttk.Label(einzel_frame, text="Jahr:").place(x=20, y=30 + (len(labels) + 1) * 40)
+        ttk.Label(einzel_frame, text="ab Jahr:").place(x=20, y=30 + (len(labels) + 1) * 40)
         jahr_combo = ttk.Combobox(einzel_frame, values=["2024", "2025"])
         jahr_combo.place(x=120, y=30 + (len(labels) + 1) * 40, width=180)
         inputs["Jahr"] = jahr_combo
