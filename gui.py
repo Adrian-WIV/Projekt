@@ -137,7 +137,7 @@ def start_main_gui():
 
     #bild global laden
     try:
-        bildpfad = "badmeyer_small-removebg.png"
+        bildpfad = "badmeyer_small.png"
         if not os.path.isfile(bildpfad):
             raise FileNotFoundError(f"Datei nicht gefunden: {bildpfad}")
         logo_bild = tk.PhotoImage(file=bildpfad)
@@ -284,7 +284,7 @@ def start_main_gui():
 
         #Badmeyer-Logo unten links
         try:
-            bildpfad = "badmeyer_small-removebg.png"  #Pfad zur Bilddatei
+            bildpfad = "badmeyer_small.png"  #Pfad zur Bilddatei
 
             #Prüft, ob die Bilddatei existiert
             if not os.path.isfile(bildpfad):
@@ -399,7 +399,7 @@ def start_main_gui():
             for zeile in gesamt_tabelle.get_children():
                 gesamt_tabelle.delete(zeile)
 
-            #er#gebnsi
+            #ergebnis
 
             for datensatz in daten:
                 gesamt_tabelle.insert("", tk.END, values = datensatz)
@@ -416,7 +416,7 @@ def start_main_gui():
 
         # Bild unten links
         try:
-            bildpfad = "badmeyer_small-removebg.png"
+            bildpfad = "badmeyer_small.png"
             if not os.path.isfile(bildpfad):
                 raise FileNotFoundError(f"Datei nicht gefunden: {bildpfad}")
             if logo_bild:
