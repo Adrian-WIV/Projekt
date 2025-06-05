@@ -165,3 +165,22 @@ def sql_gesamtsuche(kunden_id="", produkt="", monat=None, jahr=None):
     cur.close()
     conn.close()
     return daten
+
+def do_login(user = ""):
+    conn, cur = mariadbconnect()
+    if conn is None or cur is None:
+        print("Keine Verbindung möglich")
+        return []
+    
+    abfrage = """ SELECT login.benutzername, login.`passwort-hash`
+            FROM login
+            WHERE 1=1
+            """
+    
+    werte = [user]
+
+    cur.execute(abfrage, tuple(werte))
+    daten = cur.fetchone()
+    cur.close()
+    conn.close()
+    return daten

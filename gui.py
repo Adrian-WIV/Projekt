@@ -2,13 +2,12 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from ttkthemes import ThemedTk
 import os
-from db import sql_einzelansicht, sql_gesamtsuche
+from db import sql_einzelansicht, sql_gesamtsuche, do_login
 import hashlib
 
-gemeinsames_passwort = "passwort"
-gehashter_pw = hashlib.sha256(gemeinsames_passwort.encode()).hexdigest()
-print(gehashter_pw)
-users = {"lucas": gehashter_pw, "adrian": gehashter_pw,"admin": gehashter_pw}
+# gemeinsames_passwort = "passwort"
+# gehashter_pw = hashlib.sha256(gemeinsames_passwort.encode()).hexdigest()
+# users = {"lucas": gehashter_pw, "adrian": gehashter_pw,"admin": gehashter_pw}
 
 # ---------- SPLASH & LOGIN BLOCK ----------
 def show_splash_and_login():
@@ -66,19 +65,24 @@ def show_splash_and_login():
         ttk.Label(login_frame, text="Passwort").place(relx=0.5, rely=0.4, anchor="center")
         pass_entry = ttk.Entry(login_frame, show="*")
         pass_entry.place(relx=0.5, rely=0.5, anchor="center")
-        def do_login():
+        def einloggen():
             username = user_entry.get().strip().lower()
             password = pass_entry.get().strip()
+
             if username and password:
-                hashed_pw = hashlib.sha256(password.encode()).hexdigest()
-                if username in users and users[username] == hashed_pw:
-                    login.destroy()
-                    start_main_gui()
+                daten = do_login(user=username)
+                if daten:
+                    db_hash = daten[1]
+                    hashed_pw = hashlib.sha256(password.encode()).hexdigest()
+                    if hashed_pw == db_hash:
+                        login.destroy()
+                        start_main_gui()
+
                 else:
                     tk.messagebox.showerror("Login fehlgeschlagen", "Benutzername oder Passwort falsch!")
             else:
                 tk.messagebox.showerror("Fehler", "Bitte Benutzername und Passwort eingeben.")
-        ttk.Button(login_frame, text="Login", command=do_login).place(relx=0.5, rely=0.7, anchor="center")
+        ttk.Button(login_frame, text="Login", command=einloggen).place(relx=0.5, rely=0.7, anchor="center")
         login.mainloop()
     update_bar()
     splash.mainloop()
