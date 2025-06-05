@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from ttkthemes import ThemedTk
 import os
+import sys
 from db import sql_einzelansicht, sql_gesamtsuche, do_login
 import hashlib
 
@@ -10,6 +11,13 @@ import hashlib
 # users = {"lucas": gehashter_pw, "adrian": gehashter_pw,"admin": gehashter_pw}
 
 # ---------- SPLASH & LOGIN BLOCK ----------
+
+def get_resource_path(dateiname):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, dateiname)
+    return os.path.join(os.path.abspath("."), dateiname)
+
+
 def show_splash_and_login():
     splash = ThemedTk(theme="winxpblue")
     splash.title("Ladeprogramm")
@@ -24,7 +32,7 @@ def show_splash_and_login():
     splash_frame = ttk.Frame(splash, style="Splash.TFrame")
     splash_frame.place(relwidth=1, relheight=1)
     try:
-        bildpfad = "Badmeyer.png"
+        bildpfad = get_resource_path("Badmeyer.png")
         if not os.path.isfile(bildpfad):
             raise FileNotFoundError(f"Datei nicht gefunden: {bildpfad}")
         bg_image = tk.PhotoImage(file=bildpfad)
@@ -114,7 +122,7 @@ def start_main_gui():
     start_label.place(relx=0.5, rely=0.2, anchor="center")
 
     try:
-        bildpfad = "badmeyer_small.png"
+        bildpfad = get_resource_path("badmeyer_small.png")
         if not os.path.isfile(bildpfad):
             raise FileNotFoundError(f"Datei nicht gefunden: {bildpfad}")
         start_bild = tk.PhotoImage(file=bildpfad)
@@ -137,7 +145,7 @@ def start_main_gui():
 
     #bild global laden
     try:
-        bildpfad = "badmeyer_small.png"
+        bildpfad = get_resource_path("badmeyer_small.png")
         if not os.path.isfile(bildpfad):
             raise FileNotFoundError(f"Datei nicht gefunden: {bildpfad}")
         logo_bild = tk.PhotoImage(file=bildpfad)
@@ -284,7 +292,7 @@ def start_main_gui():
 
         #Badmeyer-Logo unten links
         try:
-            bildpfad = "badmeyer_small.png"  #Pfad zur Bilddatei
+            bildpfad = get_resource_path("badmeyer_small.png")  #Pfad zur Bilddatei
 
             #Prüft, ob die Bilddatei existiert
             if not os.path.isfile(bildpfad):
@@ -416,7 +424,7 @@ def start_main_gui():
 
         # Bild unten links
         try:
-            bildpfad = "badmeyer_small.png"
+            bildpfad = get_resource_path("badmeyer_small.png")
             if not os.path.isfile(bildpfad):
                 raise FileNotFoundError(f"Datei nicht gefunden: {bildpfad}")
             if logo_bild:
