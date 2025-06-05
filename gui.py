@@ -44,9 +44,11 @@ def show_splash_and_login():
         if value < 100:
             splash.after(80, update_bar, value + 7)
         else:
-            splash.after(500, show_login_screen)
+            splash.after(500, login_screen)
 
-    def show_login_screen():
+
+        #Login Bildschirm 
+    def login_screen():
         splash.destroy()
         login = ThemedTk(theme="winxpblue")
         login.title("Login")
@@ -90,7 +92,7 @@ def show_splash_and_login():
 def start_main_gui():
     
 
-#Variablen
+    #Variablen
     global inputs
     inputs = {}
 
@@ -111,8 +113,8 @@ def start_main_gui():
     einzel_frame = ttk.Frame(main_frame)
     gesamt_frame = ttk.Frame(main_frame)
 
-    #bild global laden
 
+    #bild global laden
     try:
         bildpfad = "badmeyer_small-removebg.png"
         if not os.path.isfile(bildpfad):
@@ -122,25 +124,27 @@ def start_main_gui():
         print("Fehler beim Laden des Bildes:", fehler)
         logo_bild = None  
 
-    #Funktionen
-    #Frame auswahl
+    #Frame Auswahl
+
     def zeige_frame(frame):
         
         for unterframe in main_frame.winfo_children():
             unterframe.place_forget()
         frame.place(x=0, y=0, relwidth=1, relheight=1)
     
-    def clear_treeview(tree):
+    #Tabelle leeren
+    def tabelleleeren(tree):
         for item in tree.get_children():
             tree.delete(item)
 
+    #Logout
     def logout():
-        messagebox.showinfo("Logout", "Logout erfolgreich!")
-        root.destroy()
-        
+        bestätigen = messagebox.askyesno("Abmelden", "Möchten Sie sich wirklich abmelden?")
+        if bestätigen:
+            root.destroy()
+    
 
-
-
+    #Auswahl Einzelsuche
     def einzelsuche():
         
         daten = []
@@ -209,8 +213,7 @@ def start_main_gui():
 
             
             #Tabelle leeren
-            for zeile in tabelle.get_children():
-                    tabelle.delete(zeile)
+            tabelleleeren(tabelle)
 
 
             # Neue Daten einfügen
@@ -218,14 +221,13 @@ def start_main_gui():
                 tabelle.insert("", tk.END, values=datensatz)
 
             
-
-                
+        
         #Such-Button, der die Funktion "suchen" aufruft
         such_btn = ttk.Button(einzel_frame, text="Suchen", command=suchen)
         such_btn.place(x=120, y=25 + (len(labels) + 2) * 40, width=180)
 
         #leeren button
-        btn_clear_einzel = ttk.Button(einzel_frame, text="Leeren", command=lambda: clear_treeview(tabelle))
+        btn_clear_einzel = ttk.Button(einzel_frame, text="Leeren", command=lambda: tabelleleeren(tabelle))
         btn_clear_einzel.place(x=120, y=55 + (len(labels)+2) * 40, width=180)
 
 
@@ -283,7 +285,6 @@ def start_main_gui():
 
     def gesamtansicht():
         
-
         #Eingabefelder
 
         labels = ["ID-Kunde:", "Produkt:"]
@@ -389,7 +390,7 @@ def start_main_gui():
         btn_suche.place(x=120, y=30 + (len(labels) + 2) *40, width=180)
 
         #leeren button
-        btn_clear_einzel = ttk.Button(gesamt_frame, text="Leeren", command=lambda: clear_treeview(gesamt_tabelle))
+        btn_clear_einzel = ttk.Button(gesamt_frame, text="Leeren", command=lambda: tabelleleeren(gesamt_tabelle))
         btn_clear_einzel.place(x=120, y=55 + (len(labels)+2) * 40, width=180)
 
         # Bild unten links
@@ -417,7 +418,3 @@ def start_main_gui():
     # #Anwendung wird gestartet
     einzelsuche()
     root.mainloop()
-
-# ---------- PROGRAMMSTART ----------
-if __name__ == "__main__":
-    show_splash_and_login()
